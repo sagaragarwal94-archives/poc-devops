@@ -55,7 +55,7 @@ def create_admin(username):
         else:
             print('password mismatch')
         return redirect(url_for('admin.profile', username=user['username']))
-    return render_template('admin/create_admin.html', user=username, admins_details=admins_details, admins_names=admins_names)
+    return render_template('admin/create_admin.html', user=user, admins_details=admins_details, admins_names=admins_names)
 
 
 @login_required
