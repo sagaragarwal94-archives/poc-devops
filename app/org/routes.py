@@ -59,3 +59,13 @@ def org_status(username, org_username):
     else:
         mongo.db.orgs.update_one({'username': org_username}, {'$set': {'status': 'active'}})
     return redirect(url_for('org.edit_org', username=username, org_username=org_username))
+
+@login_required
+@org.route('/admin/<username>/org/<org_username>/create_org_admin', methods=['GET'])
+def create_org_admin(username, org_username):
+    org_admin_name = request.form['org_admin_name']
+    org_admin_username = request.form['org_admin_username']
+    org_admin_password = request.form['org_admin_password']
+    org_admin_repassword = request.form['org_admin_repassword']
+    print(org_admin_name)
+    return redirect(url_for('org.edit_org', username=username, org_username=org_username))
