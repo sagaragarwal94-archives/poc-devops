@@ -44,7 +44,10 @@
                         <div class="collapsible-body">
                             <ul>
                                 {% for org_name in orgs_names %}
-                                    <li><a href="">{{ org_name }}</a></li>
+                                    <li>
+                                        <a href="{{ url_for('org.edit_org', username=user['username'], org_username=org_name['username']) }}">{{ org_name['name'] }}</a>
+                                    </li>
+
                                 {% endfor %}
                             </ul>
                         </div>
@@ -86,7 +89,7 @@
                 </thead>
 
                 <tbody>
-                {% for org in orgs_names %}
+                {% for org in orgs %}
                     <tr>
                         <td>{{ org['username'] }}</td>
                         <td>{{ org['name'] }}</td>
