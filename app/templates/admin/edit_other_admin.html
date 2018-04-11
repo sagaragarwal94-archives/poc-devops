@@ -24,7 +24,7 @@
             <li>
                 <hr>
             </li>
-            <li class="active"><a href="{{ url_for('admin.profile', username=user['username']) }}"
+            <li><a href="{{ url_for('admin.profile', username=user['username']) }}"
                                   class="waves-effect waves-teal">My Profile</a></li>
             <li class="no-padding">
                 <ul class="collapsible collapsible-accordion">
@@ -33,7 +33,11 @@
                         <div class="collapsible-body">
                             <ul>
                                 {% for admin in admins_names %}
-                                    <li style="margin-left: 10%">
+                                    {% if admin['username'] == other_admin['username'] %}
+                                    <li style="margin-left: 10%" class="active">
+                                    {% else %}
+                                         <li style="margin-left: 10%">
+                                         {% endif %}
                                         <a href="{{ url_for('admin.edit_other_admin', username=user['username'],other_admin_username=admin['username']) }}">
                                             {{ admin['name'] }}
                                         </a>
