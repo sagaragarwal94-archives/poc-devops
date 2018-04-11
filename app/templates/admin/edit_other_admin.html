@@ -25,7 +25,7 @@
                 <hr>
             </li>
             <li><a href="{{ url_for('admin.profile', username=user['username']) }}"
-                                  class="waves-effect waves-teal">My Profile</a></li>
+                   class="waves-effect waves-teal">My Profile</a></li>
             <li class="no-padding">
                 <ul class="collapsible collapsible-accordion">
                     <li class="bold"><a class="collapsible-header waves-effect waves-teal active"
@@ -34,14 +34,14 @@
                             <ul>
                                 {% for admin in admins_names %}
                                     {% if admin['username'] == other_admin['username'] %}
-                                    <li style="margin-left: 10%" class="active">
-                                    {% else %}
-                                         <li style="margin-left: 10%">
-                                         {% endif %}
-                                        <a href="{{ url_for('admin.edit_other_admin', username=user['username'],other_admin_username=admin['username']) }}">
-                                            {{ admin['name'] }}
-                                        </a>
-                                    </li>
+                                        <li style="margin-left: 10%" class="active">
+                                            {% else %}
+                                        <li style="margin-left: 10%">
+                                    {% endif %}
+                                <a href="{{ url_for('admin.edit_other_admin', username=user['username'],other_admin_username=admin['username']) }}">
+                                    {{ admin['name'] }}
+                                </a>
+                                </li>
                                 {% endfor %}
                             </ul>
                         </div>
@@ -50,10 +50,10 @@
             </li>
             <li class="no-padding">
                 <ul class="collapsible collapsible-accordion">
-                    <li class="bold"><a class="collapsible-header waves-effect waves-teal" href="">Organisations</a>
+                    <li class="bold"><a class="collapsible-header waves-effect waves-teal "
+                                        href="{{ url_for('org.show_orgs', username=user['username']) }}">Organisations</a>
                         <div class="collapsible-body">
                             <ul>
-                                <li><a href="">org1</a></li>
                             </ul>
                         </div>
                     </li>
@@ -140,14 +140,17 @@
                             Change Password
                         </button>
                         <br><br>
-                        <a class="btn waves-effect waves-light " href="{{ url_for('admin.other_admin_status', username=user['username'],other_admin_username=other_admin['username'], status=other_admin['status']) }}">
+                        <a class="btn waves-effect waves-light "
+                           href="{{ url_for('admin.other_admin_status', username=user['username'],other_admin_username=other_admin['username'], status=other_admin['status']) }}">
                             {% if other_admin['status'] == 'active' %}
-                            Suspend Account
+                                Suspend Account
                             {% else %}
-                            Activate Account
+                                Activate Account
                             {% endif %}
                         </a>
-                        <a class="btn waves-effect waves-light"  href="{{ url_for('admin.delete_other_admin', username=user['username'],other_admin_username=other_admin['username']) }}" name="action">Delete Account
+                        <a class="btn waves-effect waves-light"
+                           href="{{ url_for('admin.delete_other_admin', username=user['username'],other_admin_username=other_admin['username']) }}"
+                           name="action">Delete Account
                         </a>
                     </div>
                 </div>

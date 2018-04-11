@@ -37,10 +37,9 @@
             </li>
             <li class="no-padding">
                 <ul class="collapsible collapsible-accordion">
-                    <li class="bold"><a class="collapsible-header waves-effect waves-teal" href="">Organisations</a>
+                    <li class="bold"><a class="collapsible-header waves-effect waves-teal " href="{{ url_for('org.show_orgs', username=user['username']) }}">Organisations</a>
                         <div class="collapsible-body">
                             <ul>
-                                <li><a href="">org1</a></li>
                             </ul>
                         </div>
                     </li>

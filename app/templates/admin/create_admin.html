@@ -25,7 +25,7 @@
                 <hr>
             </li>
             <li><a href="{{ url_for('admin.profile', username=user['username']) }}"
-                                  class="waves-effect waves-teal">My Profile</a></li>
+                   class="waves-effect waves-teal">My Profile</a></li>
             <li class="no-padding">
                 <ul class="collapsible collapsible-accordion">
                     <li class="bold"><a class="collapsible-header active waves-effect waves-teal"
@@ -44,10 +44,10 @@
             </li>
             <li class="no-padding">
                 <ul class="collapsible collapsible-accordion">
-                    <li class="bold"><a class="collapsible-header waves-effect waves-teal" href="">Organisations</a>
+                    <li class="bold"><a class="collapsible-header waves-effect waves-teal "
+                                        href="{{ url_for('org.show_orgs', username=user['username']) }}">Organisations</a>
                         <div class="collapsible-body">
                             <ul>
-                                <li><a href="">org1</a></li>
                             </ul>
                         </div>
                     </li>

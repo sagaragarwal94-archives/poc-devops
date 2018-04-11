@@ -15,6 +15,7 @@
 
     <div class="col s12 m4 l3">
 
+
         <ul id="nav-mobile" class="side-nav fixed">
             <li class="logo" style="text-align: center">
                 <img src="https://media.glassdoor.com/sqll/717780/techsophy-squarelogo-1427237979370.png" alt=""
@@ -25,32 +26,26 @@
             <li>
                 <hr>
             </li>
-            <li><a href="{{ url_for('admin.profile', username=user['username']) }}"
-                   class="waves-effect waves-teal">My Profile</a></li>
+            <li><a href="{{ url_for('admin.profile', username=user['username']) }}" class="waves-effect waves-teal">My
+                Profile</a></li>
             <li class="no-padding">
                 <ul class="collapsible collapsible-accordion">
-                    <li class="bold"><a class="collapsible-header waves-effect waves-teal active"
+                    <li class="bold"><a class="collapsible-header waves-effect waves-teal"
                                         href="{{ url_for('admin.show_admins', username=user['username']) }}">Admins</a>
                         <div class="collapsible-body">
-                            <ul>
-                                {% for admin in admins_names %}
-                                    <li style="margin-left: 10%">
-                                        <a href="{{ url_for('admin.edit_other_admin', username=user['username'],other_admin_username=admin['username']) }}">
-                                            {{ admin['name'] }}
-                                        </a>
-                                    </li>
-                                {% endfor %}
-                            </ul>
                         </div>
                     </li>
                 </ul>
             </li>
             <li class="no-padding">
                 <ul class="collapsible collapsible-accordion">
-                    <li class="bold"><a class="collapsible-header waves-effect waves-teal "
+                    <li class="bold"><a class="collapsible-header waves-effect waves-teal active"
                                         href="{{ url_for('org.show_orgs', username=user['username']) }}">Organisations</a>
                         <div class="collapsible-body">
                             <ul>
+                                {% for org_name in orgs_names %}
+                                    <li><a href="">{{ org_name }}</a></li>
+                                {% endfor %}
                             </ul>
                         </div>
                     </li>
@@ -70,9 +65,9 @@
 
                     </div>
                     <div class="nav-content">
-                        <span class="nav-title">System Administrators</span>
+                        <span class="nav-title">Organisations</span>
                         <a class="btn-floating btn-large halfway-fab waves-effect waves-light teal"
-                           href="{{ url_for('admin.create_admin', username=user['username']) }}">
+                           href="{{ url_for('org.create_org', username=user['username']) }}">
                             <i class="material-icons">add</i>
                         </a>
                     </div>
@@ -84,18 +79,21 @@
             <table class="striped">
                 <thead>
                 <tr>
-                    <th>Username</th>
-                    <th>Name</th>
+                    <th>Organisation Username</th>
+                    <th>Organisation Names</th>
+                    <th>Organisation Admins</th>
                 </tr>
                 </thead>
 
                 <tbody>
-                {% for admin in admins_details %}
+                {% for org in orgs_names %}
                     <tr>
-                        <td>{{ admin['username'] }}</td>
-                        <td>{{ admin['name'] }}</td>
+                        <td>{{ org['username'] }}</td>
+                        <td>{{ org['name'] }}</td>
+                        <td>{{ org['org_admins'] }}</td>
                     </tr>
                 {% endfor %}
+
                 </tbody>
             </table>
         </ul>
@@ -104,8 +102,6 @@
     </div>
 
 </div>
-<!--Import jQuery before materialize.js-->
-
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='assets/js/materialize.min.js') }}"></script>
 </body>
