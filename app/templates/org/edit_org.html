@@ -7,6 +7,7 @@
     <!--Import materialize.css-->
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='assets/css/materialize.min.css') }}">
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='assets/css/dropify.css') }}">
+    {{ JSGlue.include() }}
 
     <!--Let browser know website is optimized for mobile-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -139,7 +140,6 @@
 
                 <li>
                   <div id="create" class="modal">
-                      <form method="POST">
                     <div class="modal-content">
                       <div class="modal-content">
                         <h4>Create Organisation Admin</h4>
@@ -173,12 +173,11 @@
                       </div>
                       </div>
                       <div class="modal-footer">
-                          <button type="submit" class="btn waves-effect waves-light" href="{{ url_for('org.create_org_admin', username=user['username'], org_username=org_info['username']) }}">Submit Changes</button>
+                          <button type="submit" class="btn waves-effect waves-light" onclick="create_org_admin()">Submit Changes</button>
                         <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Go Back</a>
 
                       </div>
                     </div>
-                          </form>
                   </div>
                   <p><strong> Organisation Admin / Admins </strong><a class="btn-floating btn-large halfway-fab waves-effect waves-light teal modal-trigger" href="#create">
                     <i class="material-icons">add</i>
@@ -200,44 +199,6 @@
                         <td>orgadmin1</td>
                         <td>Active</td>
                         <td>
-                          <div id="edit" class="modal">
-                            <div class="modal-content">
-                              <h4>Edit Organisation Admin</h4>
-                              <div class="row">
-                              <div class="input-field col s6">
-                                <input value="Org Admin 1" placeholder="Placeholder" id="org_admin_name" name="name" type="text" class="validate">
-                                <label for="name">Enter Name</label>
-                              </div>
-                              </div>
-
-                            <div class="row">
-                              <div class="input-field col s6">
-                                <input disabled value="orgadmin1" placeholder="Placeholder" id="org_admin_username" name="username" type="text" class="validate" required>
-                                <label for="username">Enter Username</label>
-                              </div>
-                                  </div>
-
-
-                           <div class="row">
-                              <div class="input-field col s12">
-                                <input id="org_password" type="password" class="validate">
-                                <label for="password">Enter New Password</label>
-                              </div>
-                            </div>
-
-                          <div class="row">
-                              <div class="input-field col s12">
-                                <input id="org_repassword" type="password" class="validate">
-                                <label for="password">Re Enter New Password</label>
-                              </div>
-                            </div>
-                            </div>
-                            <div class="modal-footer">
-                              <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Submit</a>
-                              <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Go Back</a>
-
-                            </div>
-                          </div>
                           <a class="modal-trigger" href="#edit">Edit</a>/<a href="">Suspend</a>/<a href="">Delete</a></td>
                       </tr>
                     </tbody>
@@ -273,6 +234,30 @@
     $(document).ready(function () {
         $('.modal').modal();
     });
+</script>
+
+<script type="application/javascript">
+    function create_org_admin() {
+        let name = document.getElementById('org_admin_name').value;
+        let username = document.getElementById('org_admin_username').value;
+        let password = document.getElementById('org_admin_password').value;
+        let repassword = document.getElementById('org_admin_repassword').value;
+        $.ajax({
+            url: Flask.url_for('main.create_org_admin'),
+            type: "GET",
+            data: {
+                'name': name,
+                'username': username,
+                'password': password,
+                'repassword': repassword
+            },
+            success: function (data) {
+                console.log(data)
+            },
+            error: function (xhr) {
+            }
+        })
+    }
 </script>
 </body>
 </html>
