@@ -85,7 +85,7 @@ def create_org_admin():
     org_info = mongo.db.orgs.find_one({'username': org_username}, {'org_admins': 1, '_id': 0})
     org_admins = org_info['org_admins'].split(',')
     if password == repassword:
-        exist_user = mongo.db.users.find_one({'username': username})
+        exist_user = mongo.db.users.find_one({'$and':[{'username': username}, {'org_username': org_username}]})
         if exist_user:
             return jsonify({'code': 'User of username exists, different Username'})
         else:
