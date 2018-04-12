@@ -4,6 +4,7 @@ cffi==1.11.2
 click==6.7
 Flask==0.12.1
 Flask-Bcrypt==0.7.1
+Flask-JSGlue==0.3.1
 Flask-Login==0.4.0
 Flask-PyMongo==0.5.1
 Flask-Script==2.0.6
@@ -16,4 +17,3 @@ pymongo==3.4.0
 pyparsing==2.2.0
 six==1.10.0
 Werkzeug==0.12.1
-

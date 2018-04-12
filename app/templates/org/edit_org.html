@@ -47,12 +47,12 @@
                         <div class="collapsible-body">
                             <ul>
                                 {% for org_name in orgs_names %}
-                                {% if org_name['username'] == org_info['username'] %}
-                                    <li style="margin-left: 10%" class="active">
+                                    {% if org_name['username'] == org_info['username'] %}
+                                        <li style="margin-left: 10%" class="active">
                                             {% else %}
                                         <li style="margin-left: 10%">
                                     {% endif %}
-                                    <a href="{{ url_for('org.edit_org', username=user['username'], org_username=org_name['username']) }}">{{ org_name['name'] }}</a>
+                                <a href="{{ url_for('org.edit_org', username=user['username'], org_username=org_name['username']) }}">{{ org_name['name'] }}</a>
                                 </li>
                                 {% endfor %}
                             </ul>
@@ -88,14 +88,16 @@
 
                         <div class="row">
                             <div class="input-field col s6">
-                                <input value="{{ org_info.name }}" placeholder="Placeholder" id="name" name="orgname" type="text"
+                                <input value="{{ org_info.name }}" placeholder="Placeholder" id="name" name="orgname"
+                                       type="text"
                                        class="validate" required>
                                 <label for="name">Organisation Name</label>
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s6">
-                                <input disabled value="{{ org_info.username }}" placeholder="Placeholder" id="username" name="orgusername" type="text"
+                                <input disabled value="{{ org_info.username }}" placeholder="Placeholder" id="username"
+                                       name="orgusername" type="text"
                                        class="validate" required>
                                 <label for="name">Organisation UserName</label>
                             </div>
@@ -103,7 +105,7 @@
                         <div class="row">
                             <div class="input-field col s6">
                                 <textarea id="textarea1" name="orgdescription" class="materialize-textarea"
-                                          data-length="120"  required>{{ org_info.desc }}</textarea>
+                                          data-length="120" required>{{ org_info.desc }}</textarea>
                                 <label for="textarea1">Description</label>
                             </div>
 
@@ -120,15 +122,18 @@
                                 Submit
                             </button>
                             {% if org_info['status'] == 'active' %}
-                            <a class="btn waves-effect waves-light" href="{{ url_for('org.org_status', username=user['username'], org_username=org_info['username']) }}">
-                                Suspend Account
-                            </a>
+                                <a class="btn waves-effect waves-light"
+                                   href="{{ url_for('org.org_status', username=user['username'], org_username=org_info['username']) }}">
+                                    Suspend Account
+                                </a>
                             {% else %}
-                                 <a class="btn waves-effect waves-light" href="{{ url_for('org.org_status', username=user['username'], org_username=org_info['username']) }}">
-                                Activate Account
-                            </a>
+                                <a class="btn waves-effect waves-light"
+                                   href="{{ url_for('org.org_status', username=user['username'], org_username=org_info['username']) }}">
+                                    Activate Account
+                                </a>
                             {% endif %}
-                            <a class="btn waves-effect waves-light" href="{{ url_for('org.delete_org', username=user['username'], org_username=org_info['username']) }}">
+                            <a class="btn waves-effect waves-light"
+                               href="{{ url_for('org.delete_org', username=user['username'], org_username=org_info['username']) }}">
                                 Delete Account
                             </a>
 
@@ -138,72 +143,124 @@
 
             </li>
 
-                <li>
-                  <div id="create" class="modal">
+            <li>
+                <div id="create" class="modal">
                     <div class="modal-content">
-                      <div class="modal-content">
-                        <h4>Create Organisation Admin</h4>
-                        <div class="row">
-                        <div class="input-field col s6">
-                          <input value="" placeholder="Placeholder" id="org_admin_name" name="org_admin_name" type="text" class="validate" required>
-                          <label for="name">Enter Name</label>
-                        </div>
-                        </div>
+                        <div class="modal-content">
+                            <h4>Create Organisation Admin</h4>
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input value="" placeholder="Placeholder" id="org_admin_name" name="org_admin_name"
+                                           type="text" class="validate" required>
+                                    <label for="name">Enter Name</label>
+                                </div>
+                            </div>
 
-                      <div class="row">
-                        <div class="input-field col s6">
-                          <input  value="" placeholder="Placeholder" id="org_admin_username" name="org_admin_username" type="text" class="validate" required>
-                          <label for="username">Enter Username</label>
-                        </div>
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input value="" placeholder="Placeholder" id="org_admin_username"
+                                           name="org_admin_username" type="text" class="validate" required>
+                                    <label for="username">Enter Username</label>
+                                </div>
                             </div>
 
 
-                     <div class="row">
-                        <div class="input-field col s12">
-                          <input id="org_admin_password" name="org_admin_password" type="password" class="validate" required>
-                          <label for="password">Enter  Password</label>
-                        </div>
-                      </div>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="org_admin_password" name="org_admin_password" type="password"
+                                           class="validate" required>
+                                    <label for="password">Enter Password</label>
+                                </div>
+                            </div>
 
-                    <div class="row">
-                        <div class="input-field col s12">
-                          <input id="org_admin_repassword" name="org_admin_repassword" type="password" class="validate" required>
-                          <label for="password">Re Enter  Password</label>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="org_admin_repassword" name="org_admin_repassword" type="password"
+                                           class="validate" required>
+                                    <label for="password">Re Enter Password</label>
+                                </div>
+                            </div>
                         </div>
-                      </div>
-                      </div>
-                      <div class="modal-footer">
-                          <button type="submit" class="btn waves-effect waves-light" onclick="create_org_admin()">Submit Changes</button>
-                        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Go Back</a>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn waves-effect waves-light modal-close"
+                                    onclick="create_org_admin()">Submit Changes
+                            </button>
+                            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Go Back</a>
 
-                      </div>
+                        </div>
                     </div>
-                  </div>
-                  <p><strong> Organisation Admin / Admins </strong><a class="btn-floating btn-large halfway-fab waves-effect waves-light teal modal-trigger" href="#create">
+                </div>
+                <p><strong> Organisation Admin / Admins </strong><a
+                        class="btn-floating btn-large halfway-fab waves-effect waves-light teal modal-trigger"
+                        href="#create">
                     <i class="material-icons">add</i>
-                  </a></p>
+                </a></p>
 
-                  <table>
+                <table class="striped">
                     <thead>
-                      <tr>
-                          <th>Org Admin Name</th>
-                          <th>Org Admin Username</th>
-                          <th>State</th>
-                          <th>Action</th>
-                      </tr>
+                    <tr>
+                        <th>Org Admin Username</th>
+                        <th>Org Admin Name</th>
+                        <th>Action</th>
+                    </tr>
                     </thead>
 
                     <tbody>
-                      <tr>
-                        <td>Org Admin 1</td>
-                        <td>orgadmin1</td>
-                        <td>Active</td>
-                        <td>
-                          <a class="modal-trigger" href="#edit">Edit</a>/<a href="">Suspend</a>/<a href="">Delete</a></td>
-                      </tr>
+                    {% for org_admin in org_admins %}
+                        <tr>
+                            <td>{{ org_admin.username }}</td>
+                            <td>{{ org_admin.name }}</td>
+                            <td>
+                                <div id="edit" class="modal">
+                                    <div class="modal-content">
+                                        <div class="modal-content">
+                                            <h4>Change Password for {{ org_admin.name }}</h4>
+
+                                            <div class="row">
+                                                <div class="input-field col s12">
+                                                    <input id="edit_password"
+                                                           type="password" class="validate" required>
+                                                    <label for="edit_password">Enter Password</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="input-field col s12">
+                                                    <input id="check_password"
+                                                           type="password" class="validate" required>
+                                                    <label for="check_password">Re Enter Password</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn waves-effect waves-light modal-close"
+                                                    onclick="edit_org_admin('{{ org_admin.username }}')">Submit Revision
+                                            </button>
+                                            <a href="#!"
+                                               class="modal-action modal-close waves-effect waves-green btn-flat">Go
+                                                Back</a>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn waves-effect waves-light modal-trigger" href="#edit" name="action">
+                                    Change Password
+                                </button>/
+                                <button class="btn waves-effect waves-light"
+                                        onclick="return status_org_admin('{{ org_admin.username }}', '{{ org_admin.status }}')"
+                                        id='{{ org_admin.username }}_status'>
+                                    {% if org_admin.status == 'active' %} Suspend Admin {% else %} Activate Admin {% endif %}
+                                </button>
+                                /
+                                <button class="btn waves-effect waves-light" id='{{ org_admin.username }}_delete'
+                                        onclick="delete_org_admin('{{ org_admin.username }}')">Delete
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
                     </tbody>
-                  </table>
-                </li>
+                </table>
+            </li>
 
 
         </ul>
@@ -238,26 +295,97 @@
 
 <script type="application/javascript">
     function create_org_admin() {
-        let name = document.getElementById('org_admin_name').value;
-        let username = document.getElementById('org_admin_username').value;
-        let password = document.getElementById('org_admin_password').value;
-        let repassword = document.getElementById('org_admin_repassword').value;
+        var name = document.getElementById('org_admin_name').value;
+        var username = document.getElementById('org_admin_username').value;
+        var password = document.getElementById('org_admin_password').value;
+        var repassword = document.getElementById('org_admin_repassword').value;
         $.ajax({
-            url: Flask.url_for('main.create_org_admin'),
+            url: Flask.url_for('org.create_org_admin'),
             type: "GET",
             data: {
                 'name': name,
                 'username': username,
                 'password': password,
-                'repassword': repassword
+                'repassword': repassword,
+                'org_username': "{{ org_info.username }}"
             },
             success: function (data) {
-                console.log(data)
+                alert(data.code)
             },
             error: function (xhr) {
             }
         })
     }
+</script>
+
+<script type="application/javascript">
+    function edit_org_admin(username) {
+        var password = document.getElementById('edit_password').value;
+        var repassword = document.getElementById('check_password').value;
+        if (password == repassword) {
+            $.ajax({
+                url: Flask.url_for('org.edit_org_admin'),
+                type: "GET",
+                data: {
+                    'username': username,
+                    'password': password,
+                },
+                success: function (data) {
+                    alert(data.code)
+                },
+                error: function (xhr) {
+                }
+            })
+        }
+        else {
+            alert('Password Mismatch')
+        }
+    }
+</script>
+
+<script type="application/javascript">
+    function status_org_admin(username, status) {
+        $.ajax({
+            url: Flask.url_for('org.status_org_admin'),
+            type: 'GET',
+            data: {
+                'username': username,
+                'status': status,
+                'org_username': "{{ org_info.username }}",
+                'admin_username': "{{ user.username }}"
+            },
+            success: function (data) {
+                window.location.href = data.url
+            },
+            error: function (xhr) {
+            }
+
+        })
+
+    }
+
+</script>
+
+<script type="application/javascript">
+    function delete_org_admin(username) {
+        $.ajax({
+            url: Flask.url_for('org.delete_org_admin'),
+            type: 'GET',
+            data: {
+                'username': username,
+                'org_username': "{{ org_info.username }}",
+                'admin_username': "{{ user.username }}"
+            },
+            success: function (data) {
+                window.location.href = data.url
+            },
+            error: function (xhr) {
+            }
+
+        })
+
+    }
+
 </script>
 </body>
 </html>
