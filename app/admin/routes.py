@@ -28,8 +28,8 @@ def profile(username):
 @admin.route('/admin/<username>/show_admins', methods=['GET'])
 def show_admins(username):
     user = mongo.db.users.find_one({'username': username})
-    admins_details = mongo.db.users.find({'username': {'$ne': username}})
-    admins_names = mongo.db.users.find({'username': {'$ne': username}}, {'name': 1, 'username': 1})
+    admins_details = mongo.db.users.find({'$and':[{'username': {'$ne': username}}, {'role': 'admin'}]})
+    admins_names = mongo.db.users.find({'$and':[{'username': {'$ne': username}}, {'role': 'admin'}]}, {'name': 1, 'username': 1})
     return render_template('admin/show_admins.html', user=user, admins_details=admins_details, admins_names=admins_names)
 
 
@@ -37,8 +37,8 @@ def show_admins(username):
 @admin.route('/admin/<username>/create_admin', methods=['GET', 'POST'])
 def create_admin(username):
     user = mongo.db.users.find_one({'username': username})
-    admins_details = mongo.db.users.find({'username': {'$ne': username}})
-    admins_names = mongo.db.users.find({'username': {'$ne': username}}, {'name': 1, 'username': 1})
+    admins_details = mongo.db.users.find({'$and':[{'username': {'$ne': username}}, {'role': 'admin'}]})
+    admins_names = mongo.db.users.find({'$and':[{'username': {'$ne': username}}, {'role': 'admin'}]}, {'name': 1, 'username': 1})
     if request.method == 'POST':
         new_name = request.form['name']
         new_username = request.form['username']
@@ -63,7 +63,7 @@ def create_admin(username):
 def edit_other_admin(username, other_admin_username):
     user = mongo.db.users.find_one({'username': username})
     other_admin = mongo.db.users.find_one({'username': other_admin_username})
-    admins_names = mongo.db.users.find({'username': {'$ne': username}}, {'name': 1, 'username': 1})
+    admins_names = mongo.db.users.find({'$and':[{'username': {'$ne': username}}, {'role': 'admin'}]}, {'name': 1, 'username': 1})
     if request.method == 'POST':
         new_password = request.form['newpassword']
         re_new_password = request.form['re_newpassword']
