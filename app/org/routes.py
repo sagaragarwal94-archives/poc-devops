@@ -87,16 +87,16 @@ def create_org_admin():
     if password == repassword:
         exist_user = mongo.db.users.find_one({'$and':[{'username': username}, {'org_username': org_username}]})
         if exist_user:
-            return jsonify({'code': 'User of username exists, different Username'})
+            return jsonify({'code': 'User of username exists, different Username', 'status': 405})
         else:
             mongo.db.users.insert(
                 {'name': name, 'username': username, 'password': password, 'role': 'orgadmin', 'status': 'active',
                  'org_username': org_username})
             org_admins.append(username)
             mongo.db.orgs.update_one({'username': org_username}, {'$set': {'org_admins': ",".join(org_admins)}})
-            return jsonify({'code': 'User created'})
+            return jsonify({'code': 'User created', 'status': 200})
     else:
-        return jsonify({'code': 'Password never matched'})
+        return jsonify({'code': 'Password never matched', 'status': 405})
 
 
 @login_required

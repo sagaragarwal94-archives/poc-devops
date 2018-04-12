@@ -16,6 +16,7 @@ def load_user(username):
 @user.route('/', methods=['POST', 'GET'])
 @user.route('/login', methods=['POST', 'GET'])
 def login():
+    message = ''
     if request.method == 'POST':
         username = request.form['inputUsername']
         password = request.form['inputPassword']
@@ -28,11 +29,15 @@ def login():
                 if user['role'] == 'admin' and user['status'] == 'active':
                     return redirect(url_for('admin.profile', username=username))
                 else:
-                    print('you are not admin or suspended, kindly contact administrator')
+                    message = 'Template Creation, Account Suspended'
+                    return render_template('user/login.html', message=message)
+            else:
+                message = 'Wrong Password, Enter Credentials Again!!'
+                return render_template('user/login.html', message=message)
         else:
-            print('wrong password')
-            return redirect(url_for('user.login'))
-    return render_template('user/login.html')
+            message = 'No Account of this Username. Sorry !!'
+            return render_template('user/login.html', message=message)
+    return render_template('user/login.html', message=message)
 
 
 @login_required
