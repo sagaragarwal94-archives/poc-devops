@@ -26,11 +26,19 @@ def login():
             if user['password'] == password:
                 user_obj = User(username)
                 login_user(user_obj)
-                if user['role'] == 'admin' and user['status'] == 'active':
-                    return redirect(url_for('admin.profile', username=username))
+                if user['role'] == 'admin':
+                    if user['status'] =='active':
+                        return redirect(url_for('admin.profile', username=username))
+                    else:
+                        message = 'Account Suspended'
+                        return render_template('user/login.html', message=message)
                 else:
-                    message = 'Template Creation, Account Suspended'
-                    return render_template('user/login.html', message=message)
+                    if user['status'] =='active':
+                        message = 'Template Creation, Account Suspended'
+                        return render_template('user/login.html', message=message)
+                    else:
+                        message = 'Account Suspended'
+                        return render_template('user/login.html', message=message)
             else:
                 message = 'Wrong Password, Enter Credentials Again!!'
                 return render_template('user/login.html', message=message)
