@@ -55,16 +55,21 @@ def delete_org(username, org_username):
     return redirect(url_for('org.show_orgs', username=username))
 
 
-# Suspend org admins when org is suspended
-
 @login_required
 @org.route('/admin/<username>/org/status/<org_username>', methods=['GET'])
 def org_status(username, org_username):
     org_info = mongo.db.orgs.find_one({'username': org_username})
+    admin_usernames = mongo.db.users.find({'org_username': org_username}, {'username': 1, '_id': 0})
+    names_list = []
+    for admin_username in admin_usernames:
+        names_list.append(admin_username['username'])
     if org_info['status'] == 'active':
         mongo.db.orgs.update_one({'username': org_username}, {'$set': {'status': 'suspend'}})
+        mongo.db.users.update_many({'username': {'$in': names_list}}, {'$set': {'status': 'suspend'}})
+
     else:
         mongo.db.orgs.update_one({'username': org_username}, {'$set': {'status': 'active'}})
+        mongo.db.users.update_many({'username': {'$in': names_list}}, {'$set': {'status': 'active'}})
     return redirect(url_for('org.edit_org', username=username, org_username=org_username))
 
 
@@ -129,4 +134,8 @@ def delete_org_admin():
     org_username = data.to_dict()['org_username']
     admin_username = data.to_dict()['admin_username']
     mongo.db.users.delete_one({'username': username})
+    org_info = mongo.db.orgs.find_one({'username': org_username}, {'org_admins': 1, '_id': 0})
+    org_admins = org_info['org_admins'].split(',')
+    org_admins.remove(username)
+    mongo.db.orgs.update_one({'username': org_username}, {'$set': {'org_admins': ",".join(org_admins)}})
     return jsonify({'url': '/admin/{admin_username}/org/edit_org/{org_username}'.format(admin_username=admin_username, org_username=org_username)})
