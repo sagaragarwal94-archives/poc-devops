@@ -27,18 +27,45 @@ def login():
                 user_obj = User(username)
                 login_user(user_obj)
                 if user['role'] == 'admin':
-                    if user['status'] =='active':
+                    if user['status'] == 'active':
                         return redirect(url_for('admin.profile', username=username))
                     else:
                         message = 'Account Suspended'
                         return render_template('user/login.html', message=message)
                 else:
-                    if user['status'] =='active':
-                        message = 'Template Creation, Account Suspended'
-                        return render_template('user/login.html', message=message)
+                    message = 'You are not admin.'
+                    return render_template('user/login.html', message=message)
+            else:
+                message = 'Wrong Password, Enter Credentials Again!!'
+                return render_template('user/login.html', message=message)
+        else:
+            message = 'No Account of this Username. Sorry !!'
+            return render_template('user/login.html', message=message)
+    return render_template('user/login.html', message=message)
+
+
+@login_required
+@user.route('/<org_username>/login', methods=['POST', 'GET'])
+def org_login(org_username):
+    message = ''
+    if request.method == 'POST':
+        username = request.form['inputUsername']
+        password = request.form['inputPassword']
+        user = mongo.db.users.find_one({'$and': [{'username': username}, {'org_username': org_username}]})
+        if user:
+            # if User.validate_login(user['password'], password):
+            if user['password'] == password:
+                user_obj = User(username)
+                login_user(user_obj)
+                if user['role'] == 'orgadmin':
+                    if user['status'] == 'active':
+                        return redirect(url_for('org_admin.dashboard', username=username, org_username=org_username))
                     else:
                         message = 'Account Suspended'
                         return render_template('user/login.html', message=message)
+                else:
+                    message = 'You are not Organisation Admin.'
+                    return render_template('user/login.html', message=message)
             else:
                 message = 'Wrong Password, Enter Credentials Again!!'
                 return render_template('user/login.html', message=message)

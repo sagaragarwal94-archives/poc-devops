@@ -1,8 +1,7 @@
 from flask import render_template, request, redirect, url_for, jsonify
-from flask_login import login_user, login_required, current_user
+from flask_login import login_required
 from app.org import org
-from app import mongo, bcrypt, login_manager
-from app.user.user_loging_manager import User
+from app import mongo
 
 
 @login_required
@@ -85,7 +84,7 @@ def create_org_admin():
     org_info = mongo.db.orgs.find_one({'username': org_username}, {'org_admins': 1, '_id': 0})
     org_admins = org_info['org_admins'].split(',')
     if password == repassword:
-        exist_user = mongo.db.users.find_one({'$and':[{'username': username}, {'org_username': org_username}]})
+        exist_user = mongo.db.users.find_one({'$and': [{'username': username}, {'org_username': org_username}]})
         if exist_user:
             return jsonify({'code': 'User of username exists, different Username', 'status': 405})
         else:
@@ -119,11 +118,13 @@ def status_org_admin():
     admin_username = data.to_dict()['admin_username']
     if status == 'active':
         mongo.db.users.update_one({'username': username}, {'$set': {'status': 'suspend'}})
-        return jsonify({'url': '/admin/{admin_username}/org/edit_org/{org_username}'.format(admin_username=admin_username, org_username=org_username)})
+        return jsonify({'url': '/admin/{admin_username}/org/edit_org/{org_username}'.format(
+            admin_username=admin_username, org_username=org_username)})
 
     else:
         mongo.db.users.update_one({'username': username}, {'$set': {'status': 'active'}})
-        return jsonify({'url': '/admin/{admin_username}/org/edit_org/{org_username}'.format(admin_username=admin_username, org_username=org_username)})
+        return jsonify({'url': '/admin/{admin_username}/org/edit_org/{org_username}'.format(
+            admin_username=admin_username, org_username=org_username)})
 
 
 @login_required
@@ -138,4 +139,5 @@ def delete_org_admin():
     org_admins = org_info['org_admins'].split(',')
     org_admins.remove(username)
     mongo.db.orgs.update_one({'username': org_username}, {'$set': {'org_admins': ",".join(org_admins)}})
-    return jsonify({'url': '/admin/{admin_username}/org/edit_org/{org_username}'.format(admin_username=admin_username, org_username=org_username)})
+    return jsonify({'url': '/admin/{admin_username}/org/edit_org/{org_username}'.format(admin_username=admin_username,
+                                                                                        org_username=org_username)})
