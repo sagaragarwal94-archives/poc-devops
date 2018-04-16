@@ -26,7 +26,7 @@
             <li>
                 <hr>
             </li>
-            <li class=""><a href="" class="waves-effect waves-teal">Dashboard</a></li>
+            <li class=""><a href="{{ url_for('org_admin.dashboard', username=user.username, org_username=org_info.username) }}" class="waves-effect waves-teal">Dashboard</a></li>
             <li class="no-padding">
                 <ul class=" collapsible collapsible-accordion">
                     <li class="bold"><a class="collapsible-header waves-effect waves-teal" href="{{ url_for('org_admin.scm', username=user.username, org_username=org_info.username) }}">SCM Profiles</a>

@@ -10,8 +10,15 @@ from app.user.user_loging_manager import User
 def dashboard(username, org_username):
     user = mongo.db.users.find_one({'$and': [{'username': username}, {'org_username': org_username}]})
     org_info = mongo.db.orgs.find_one({'username': org_username})
-    return render_template('org_admin/dashboard.html', user=user, org_info=org_info)
+    apps = mongo.db.apps.find({'org_username': org_username})
+    return render_template('org_admin/dashboard.html', user=user, org_info=org_info, apps=apps)
 
+@login_required
+@org_admin.route('/<org_username>/create_app/<username>', methods=['GET', 'POST'])
+def create_app(username, org_username):
+    user = mongo.db.users.find_one({'$and': [{'username': username}, {'org_username': org_username}]})
+    org_info = mongo.db.orgs.find_one({'username': org_username})
+    return render_template('org_admin/app_profile.html', user=user, org_info=org_info)
 
 @login_required
 @org_admin.route('/<org_username>/scm/<username>', methods=['GET', 'POST'])

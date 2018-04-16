@@ -18,7 +18,7 @@
 
         <ul id="nav-mobile" class="side-nav fixed">
             <li class="logo" style="text-align: center">
-                <img src="{{org_info.image }}"
+                <img src="{{ org_info.image }}"
                      width="100" height="100">
 
             </li>
@@ -26,10 +26,14 @@
             <li>
                 <hr>
             </li>
-            <li class="active"><a href="" class="waves-effect waves-teal">Dashboard</a></li>
+            <li class="active"><a
+                    href="{{ url_for('org_admin.dashboard', username=user.username, org_username=org_info.username) }}"
+                    class="waves-effect waves-teal">Dashboard</a></li>
             <li class="no-padding">
                 <ul class="collapsible collapsible-accordion">
-                    <li class="bold"><a class="collapsible-header waves-effect waves-teal" href="{{ url_for('org_admin.scm', username=user.username, org_username=org_info.username) }}">SCM Profiles</a>
+                    <li class="bold"><a class="collapsible-header waves-effect waves-teal"
+                                        href="{{ url_for('org_admin.scm', username=user.username, org_username=org_info.username) }}">SCM
+                        Profiles</a>
                         <div class="collapsible-body">
                         </div>
                     </li>
@@ -38,7 +42,9 @@
 
             <li class="no-padding">
                 <ul class="collapsible collapsible-accordion">
-                    <li class="bold"><a class="collapsible-header waves-effect waves-teal" href="{{ url_for('org_admin.build', username=user.username, org_username=org_info.username) }}">Build Profiles</a>
+                    <li class="bold"><a class="collapsible-header waves-effect waves-teal"
+                                        href="{{ url_for('org_admin.build', username=user.username, org_username=org_info.username) }}">Build
+                        Profiles</a>
                         <div class="collapsible-body">
                         </div>
                     </li>
@@ -47,14 +53,16 @@
 
             <li class="no-padding">
                 <ul class="collapsible collapsible-accordion">
-                    <li class="bold"><a class="collapsible-header waves-effect waves-teal" href="{{ url_for('org_admin.deploy', username=user.username, org_username=org_info.username) }}">Deployment Profiles</a>
+                    <li class="bold"><a class="collapsible-header waves-effect waves-teal"
+                                        href="{{ url_for('org_admin.deploy', username=user.username, org_username=org_info.username) }}">Deployment
+                        Profiles</a>
                         <div class="collapsible-body">
                         </div>
                     </li>
                 </ul>
             </li>
 
-            <li class="bold active" style="text-align: center"><a href="" class="waves-effect waves-teal">Sign Out</a></li>
+            {#            <li class="disabled bold active" style="text-align: center"><a href="" class="waves-effect waves-teal">Sign Out</a></li>#}
         </ul>
     </div>
 
@@ -67,6 +75,11 @@
                     </div>
                     <div class="nav-content">
                         <span class="nav-title">Dashboard</span>
+                        <a class="btn-floating btn-large halfway-fab waves-effect waves-light teal"
+                           href="{{ url_for('org_admin.create_app', username=user.username, org_username=org_info.username) }}">
+                            <i class="material-icons">add</i>
+                        </a>
+
 
                     </div>
                 </nav>
@@ -74,6 +87,33 @@
             <li>
                 <hr>
             </li>
+
+            <table class="striped">
+                <thead>
+                <tr>
+                    <th>Profile</th>
+                    <th>App Name</th>
+                    <th>SCM Repository</th>
+                    <th>Branch</th>
+                    <th>Build Profile</th>
+                    <th>Deployment Profile</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for app in apps %}
+                    <tr>
+                        <td>{{ app['scm_username'] }}</td>
+                        <td>{{ app['app_name'] }}</td>
+                        <td>{{ app['app_repo'] }}</td>
+                        <td>{{ app['branch'] }}</td>
+                        <td>{{ app['build_profile'] }}</td>
+                        <td>{{ app['deploy_profile'] }}</td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
 
         </ul>
 
