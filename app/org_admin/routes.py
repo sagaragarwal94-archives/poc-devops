@@ -20,7 +20,8 @@ def dashboard(username, org_username):
 def credentials(username, org_username):
     user = mongo.db.users.find_one({'$and': [{'username': username}, {'org_username': org_username}]})
     org_info = mongo.db.orgs.find_one({'username': org_username})
-    return render_template('org_admin_revamp/credentials.html', user=user, org_info=org_info)
+    creds = mongo.db.creds({'org_username': org_username})
+    return render_template('org_admin_revamp/credentials.html', user=user, org_info=org_info, creds=creds)
 
 
 @login_required
