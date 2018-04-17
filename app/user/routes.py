@@ -47,6 +47,7 @@ def login():
 @user.route('/<org_username>/login', methods=['POST', 'GET'])
 def org_login(org_username):
     message = ''
+    org_info = mongo.db.orgs.find_one({'username': org_username})
     if request.method == 'POST':
         username = request.form['inputUsername']
         password = request.form['inputPassword']
@@ -71,7 +72,7 @@ def org_login(org_username):
         else:
             message = 'No Account of this Username. Sorry !!'
             return render_template('user/login.html', message=message)
-    return render_template('user/login.html', message=message)
+    return render_template('user/login.html', message=message, org_info =org_info)
 
 
 @user.route('/logout')

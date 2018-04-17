@@ -18,7 +18,10 @@
     <div class="row">
 
         <div class="col s6 offset-s3 z-depth-1" id="panell">
-            <h5 id="title">Enter Credentials</h5>
+            <h5 id="title">Welcome {% if org_info %} {{ org_info.name }}{% else %} Admin{% endif %}, Enter Credentials</h5>
+            {% if org_info %}<img src="{{ org_info.image  }}" alt=""
+                     width="100" height="100" style="margin-left: 40%;margin-right: 40%;">
+            {% endif %}
             <form method="POST">
 
                 <div class="input-field" id="username">
