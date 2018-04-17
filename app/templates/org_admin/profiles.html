@@ -30,7 +30,7 @@
                 <hr>
             </li>
             <li class="bold" style="text-align: center"><a href="{{ url_for('org_admin.credentials', org_username=org_info.username, org_admin_username = admin.username) }}">Credentials</a></li>
-            <li class="bold active" style="text-align: center"><a href="#">DOPBM Profiles</a></li>
+            <li class="bold active" style="text-align: center"><a href="{{ url_for('org_admin.profile', org_username=org_info.username, org_admin_username = admin.username) }}">DOPBM Profiles</a></li>
 
 
         </ul>
@@ -197,6 +197,7 @@
                    document.getElementById('verify_scm').innerHTML='Verified';
                    document.getElementById('verify_scm').disabled = true;
                }
+               else {alert('Enter credentials again.')}
             },
             error: function (xhr) {
             }
@@ -221,6 +222,8 @@
                    document.getElementById('verify_build').innerHTML='Verified';
                    document.getElementById('verify_build').disabled = true;
                }
+                              else {alert('Enter credentials again.')}
+
             },
             error: function (xhr) {
             }
