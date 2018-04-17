@@ -28,4 +28,9 @@ from app.org import org as org_blueprint
 
 app.register_blueprint(org_blueprint)
 
+
+from app.org_admin import org_admin as org_admin_blueprint
+
+app.register_blueprint(org_admin_blueprint)
+
 login_manager.login_view = "user.login"
