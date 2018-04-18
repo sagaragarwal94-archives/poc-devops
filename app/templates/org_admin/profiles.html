@@ -91,44 +91,74 @@
                     </div>
                 </div>
                 <hr>
-                <p> select app you wish to clone ?</p>
-                <label>Select App</label>
-                <select id="app_select" class="browser-default">
-                    <option value="" disabled selected>Choose your App</option>
-                    {% for app in apps %}
-                        <option value="{{ app.name }}">{{ app.name }}</option>
-                    {% endfor %}
-                </select>
+                <div class="row">
+                    <div class="input-field col s6"><h5>Source System</h5></div>
+                    <div class="input-field col s6">
+                        {#                        <button class="btn waves-effect waves-light" style="float:right" id="verify_source"#}
+                        {#                                onclick="">Verify#}
+                        {#                        </button>#}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input id="source_server_name" name="source_server_name" type="text" class="validate" required>
+                        <label for="source_server_name">enter server name</label>
+                    </div>
+                    <div>
+                        <label>Select Credentials</label>
+                        <select id="source_cred" class="browser-default" style="width: 50%;" onchange="fetch_source(document.getElementById('source_server_name').value,
+                        document.getElementById('source_cred').value)">
+                            <option value="" disabled selected>Choose your option</option>
+                            {% for cred in credentials_info %}
+                                <option value="{{ cred.profile_name }}">{{ cred.profile_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <select id="app_select" class="browser-default" disabled="disabled">
+                        <option value="" disabled style="width: 50%" selected>Choose your App</option>
+                    </select>
+                </div>
 
                 <hr>
 
-                <p> enter scm information</p>
                 <div class="row">
+                    <div class="input-field col s6"><h5>SCM Configuration</h5></div>
                     <div class="input-field col s6">
-                        <input id="scm_repo_name" name="scm_repo_name" type="text" class="validate" required>
-                        <label for="scm_repo_name">enter scm repository name</label>
-                    </div>
-                    <div class="input-field col s6">
-                        <input id="branch_name" name="branch_name" type="text" class="validate" required>
-                        <label for="branch_name">branch_name</label>
+                        <button class="btn waves-effect waves-light" style="float:right" id="verify_scm"
+                                onclick="verify_scm()">Verify
+                        </button>
                     </div>
                 </div>
 
                 <div class="row">
+
+                    <label>Select SCM System</label>
+                    <select id="scm_system" class="browser-default" style="width: 33%">
+                        <option value="" disabled selected>Choose your option</option>
+                        <option value="github">Github</option>
+                        <option value="gitlab">Gitlab</option>
+                        <option value="svn">SVN</option>
+                    </select>
+                </div>
+                                <div class="row">
+
+                    <div class="input-field col s4">
+                        <input id="scm_repo_name" name="scm_repo_name" type="text" class="validate" required>
+                        <label for="scm_repo_name">enter scm repository name</label>
+                    </div>
+                    <div class="input-field col s4">
+                        <input id="branch_name" name="branch_name" type="text" class="validate" required>
+                        <label for="branch_name">Branch Name/Folder Name</label>
+                    </div>
+
+
                     <label>Select Credentials</label>
-                    <select id="scm_cred" class="browser-default">
+                    <select id="scm_cred" class="browser-default" style="width:33%">
                         <option value="" disabled selected>Choose your option</option>
                         {% for cred in credentials_info %}
                             <option value="{{ cred.profile_name }}">{{ cred.profile_name }}</option>
                         {% endfor %}
                     </select>
-                </div>
-
-                <div class="row">
-                    <div class="input-field col s6">
-                        <button class="btn waves-effect waves-light" id="verify_scm" onclick="verify_scm()">Verify
-                        </button>
-                    </div>
                 </div>
 
 
@@ -165,8 +195,39 @@
 
                 <hr>
 
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input id="deploy_server_name" name="deploy_server_name" type="text" class="validate" required>
+                        <label for="deploy_server_name">enter server name</label>
+                    </div>
+                    <label>Select Credentials</label>
+                    <select id="deploy_cred" class="browser-default" style="width: 50%;">
+                        <option value="" disabled selected>Choose your option</option>
+                        {% for cred in credentials_info %}
+                            <option value="{{ cred.profile_name }}">{{ cred.profile_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-field col s12">
+                    <table id="deploy_instances" class="striped">
+                        <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>Deploy Server</th>
+                            <th>Deploy Credentials</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
 
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
             </div>
+
+
             <div class="modal-footer">
                 <button class="btn waves-effect waves-light" type="submit">Save Profile</button>
                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Go
@@ -187,30 +248,34 @@
 </script>
 <script type="text/javascript">
     function verify_scm() {
+        var scm_system = document.getElementById('scm_system').value;
         var scm_repo_name = document.getElementById('scm_repo_name').value;
         var scm_branch_name = document.getElementById('branch_name').value;
         var cred = document.getElementById('scm_cred').value;
-        $.ajax({
-            url: Flask.url_for('org_admin.verify_scm'),
-            type: 'GET',
-            data: {
-                'scm_repo_name': scm_repo_name,
-                'branch_name': scm_branch_name,
-                'cred': cred,
-                'org_username': '{{ org_info.username }}'
-            },
-            success: function (data) {
-                if (data.status == 200) {
-                    document.getElementById('verify_scm').innerHTML = 'Verified';
-                    document.getElementById('verify_scm').disabled = true;
+        if (scm_system == 'github') {
+            $.ajax({
+                url: Flask.url_for('org_admin.verify_scm'),
+                type: 'GET',
+                data: {
+                    'scm_repo_name': scm_repo_name,
+                    'branch_name': scm_branch_name,
+                    'cred': cred,
+                    'org_username': '{{ org_info.username }}'
+                },
+                success: function (data) {
+                    if (data.status == 200) {
+                        document.getElementById('verify_scm').innerHTML = 'Verified';
+                        document.getElementById('verify_scm').disabled = true;
+                    }
+                    else {
+                        alert('Enter credentials again.')
+                    }
+                },
+                error: function (xhr) {
                 }
-                else {
-                    alert('Enter credentials again.')
-                }
-            },
-            error: function (xhr) {
-            }
-        })
+            })
+        }
+        else {alert('Feature for other SCM to be rolled out')}
     }
 
     function verify_build() {
@@ -239,6 +304,75 @@
             error: function (xhr) {
             }
         })
+    }
+</script>
+
+<script>
+    function fetch_source(server_name, cred) {
+        if (server_name == '') {
+            alert('Enter Source Server')
+        }
+        else {
+            $.ajax({
+                url: Flask.url_for('org_admin.verify_source'),
+                type: 'GET',
+                data: {
+                    'server_name': server_name,
+                    'cred': cred,
+                    'org_username': '{{ org_info.username }}'
+                },
+                success: function (data) {
+                    if (data.status == 200) {
+                        var select = $("#app_select");
+
+                        for (var prop in data.apps_names) {
+                            var option = document.createElement('option');
+                            option.innerHTML = data.apps_names[prop];
+                            option.value = data.apps_names[prop];
+                            select.append(option)
+                        }
+                        document.getElementById('app_select').disabled = false;
+
+                    }
+                    else {
+                        alert('Enter credentials again.')
+                    }
+
+                },
+                error: function (xhr) {
+                }
+            })
+
+        }
+
+    }
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var i = 0;
+        $("#deploy_cred").click(function () {
+            i = i + 1;
+            var deploy_server_name = $("#deploy_server_name").val();
+            var deploy_cred = $("#deploy_cred").val();
+            var markup = "<tr id='row_" + i + "'><td><button id='" + i + "' onclick='delete_row(this.id)'>Delete</button></td><td>" + deploy_server_name + "</td><td>" + deploy_cred + "</td></tr>";
+            $("#deploy_instances tbody").append(markup);
+        });
+
+        // Find and remove selected table rows
+        $(".delete-row").click(function () {
+            $("table tbody").find('input[name="record"]').each(function () {
+                if ($(this).is(":checked")) {
+                    $(this).parents("tr").remove();
+                }
+            });
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    function delete_row(id) {
+        $("#row_" + id).remove()
     }
 </script>
 </body>

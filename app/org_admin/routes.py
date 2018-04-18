@@ -109,3 +109,23 @@ def delete_cred():
         return jsonify({'status': 401})
     else:
         return jsonify({'status': 200})
+
+
+@org_admin.route('/verify_source', methods=['GET'])
+@login_required
+def verify_source():
+    data = request.args
+    data = data.to_dict()
+    profile_cred = mongo.db.creds.find_one(
+        {'$and': [{'profile_name': data['cred']}, {'org_username': data['org_username']}]})
+    apps = requests.get('http://{server_name}/activiti-app/api/enterprise/models?filter=myApps&modelType=3'.format(
+        server_name=data['server_name']),
+                        auth=(profile_cred['username'], profile_cred['password']))
+    if apps.status_code == 200:
+        apps_names = []
+        for app in  apps.json()['data']:
+            apps_names.append(app['name'])
+        print(apps_names)
+        return jsonify({'status': 200, 'apps_names': apps_names})
+    else:
+        return jsonify({'status': apps.status_code})
