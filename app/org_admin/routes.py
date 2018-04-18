@@ -20,7 +20,8 @@ def credentials(org_username, org_admin_username):
                 {'$and': [{'profile_name': profile_name}, {'org_username': org_username}]})
             if not profile_exist:
                 mongo.db.creds.insert({'profile_name': profile_name, 'username': username,
-                                       'password': request.form['password'], 'org_username': org_username})
+                                       'password': request.form['password'], 'org_username': org_username,
+                                       'admins': ''})
             else:
                 print("Profile Exists")
         else:
@@ -52,7 +53,8 @@ def verify_build():
     data = data.to_dict()
     profile_cred = mongo.db.creds.find_one(
         {'$and': [{'profile_name': data['cred']}, {'org_username': data['org_username']}]})
-    server = jenkins.Jenkins(data['build_server_name'], username=profile_cred['username'], password=profile_cred['password'])
+    server = jenkins.Jenkins(data['build_server_name'], username=profile_cred['username'],
+                             password=profile_cred['password'])
     try:
         server.get_whoami()
         return jsonify({'status': 200})
@@ -73,3 +75,37 @@ def verify_scm():
         auth=(profile_cred['username'], profile_cred['password']))
 
     return jsonify({'status': r.status_code})
+
+
+@org_admin.route('/<org_username>/edit_cred/<org_admin_username>/<profile_name>', methods=['GET', 'POST'])
+@login_required
+def edit_cred(org_username, org_admin_username, profile_name):
+    org_info = mongo.db.orgs.find_one({'username': org_username})
+    admin = mongo.db.users.find_one({'username': org_admin_username})
+    cred_info = mongo.db.creds.find_one({'$and': [{'profile_name': profile_name}, {'org_username': org_username}]})
+    if request.method == 'POST':
+        new_password = request.form['newPassword']
+        renew_password = request.form['renewPassword']
+        if new_password == renew_password:
+            mongo.db.creds.update_one({'$and': [{'profile_name': profile_name}, {'org_username': org_username}]},
+                                      {'$set': {'password': new_password}}, upsert=False)
+            return redirect(
+                url_for('org_admin.credentials', org_username=org_username, org_admin_username=org_admin_username))
+        else:
+            print('New Password never matched')
+    return render_template('org_admin/edit_credentials.html', org_info=org_info, admin=admin, cred_info=cred_info)
+
+
+@org_admin.route('/delete_cred', methods=['GET'])
+@login_required
+def delete_cred():
+    data = request.args
+    data = data.to_dict()
+    admins_list = mongo.db.creds.find_one(
+        {'$and': [{'profile_name': data['profile_name']}, {'org_username': data['org_username']}]},
+        {'admins': 1, '_id': 0})
+    print(admins_list['admins'])
+    if admins_list['admins'] == '':
+        return jsonify({'status': 401})
+    else:
+        return jsonify({'status': 200})
