@@ -74,7 +74,7 @@
 
                     </div>
                     <div class="nav-content">
-                        <span class="nav-title">Edit Organisation</span>
+                        <span class="nav-title">{{ org_info.name }}, <br> {{ org_info.desc }}</span>
                     </div>
                 </nav>
             </li>
@@ -86,14 +86,7 @@
                 <div class="row">
                     <form class="col s12" method="POST">
 
-                        <div class="row">
-                            <div class="input-field col s6">
-                                <input value="{{ org_info.name }}" placeholder="Placeholder" id="name" name="orgname"
-                                       type="text"
-                                       class="validate" required>
-                                <label for="name">Organisation Name</label>
-                            </div>
-                        </div>
+
                         <div class="row">
                             <div class="input-field col s6">
                                 <input disabled value="{{ org_info.username }}" placeholder="Placeholder" id="username"
@@ -101,16 +94,8 @@
                                        class="validate" required>
                                 <label for="name">Organisation UserName</label>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s6">
-                                <textarea id="textarea1" name="orgdescription" class="materialize-textarea"
-                                          data-length="120" required>{{ org_info.desc }}</textarea>
-                                <label for="textarea1">Description</label>
-                            </div>
-
                             <div class="col s6" style="text-align: center">
-                                <img src="{{ org_info.image }}"/>
+                                <img src="{{ org_info.image }}" style="height: 100px; width: 100px"/>
 
 
                             </div>
@@ -119,22 +104,22 @@
 
                         <div class="row">
                             <button class="btn waves-effect waves-light" type="submit">
-                                Submit
+                                Save Changes
                             </button>
                             {% if org_info['status'] == 'active' %}
                                 <a class="btn waves-effect waves-light"
                                    href="{{ url_for('org.org_status', username=user['username'], org_username=org_info['username']) }}">
-                                    Suspend Account
+                                    Suspend Organisation
                                 </a>
                             {% else %}
                                 <a class="btn waves-effect waves-light"
                                    href="{{ url_for('org.org_status', username=user['username'], org_username=org_info['username']) }}">
-                                    Activate Account
+                                    Activate Organisation
                                 </a>
                             {% endif %}
                             <a class="btn waves-effect waves-light"
                                href="{{ url_for('org.delete_org', username=user['username'], org_username=org_info['username']) }}">
-                                Delete Account
+                                Delete Organisation
                             </a>
 
                         </div>
@@ -182,7 +167,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn waves-effect waves-light modal-close"
+                            <button type="submit" class="btn waves-effect waves-light"
                                     onclick="create_org_admin()">Submit Changes
                             </button>
                             <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Go Back</a>
@@ -199,9 +184,9 @@
                 <table class="striped">
                     <thead>
                     <tr>
-                        <th>Org Admin Username</th>
-                        <th>Org Admin Name</th>
-                        <th>Action</th>
+                        <th>Admin</th>
+                        <th>Name</th>
+                        <th style="align: center">Action</th>
                     </tr>
                     </thead>
 
@@ -233,11 +218,11 @@
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="submit" class="btn waves-effect waves-light modal-close"
+                                            <button type="submit" class="btn waves-effect waves-light "
                                                     onclick="edit_org_admin('{{ org_admin.username }}')">Submit Revision
                                             </button>
                                             <a href="#!"
-                                               class="modal-action modal-close waves-effect waves-green btn-flat">Go
+                                               class="modal-action waves-effect waves-green modal-close btn-flat">Go
                                                 Back</a>
 
                                         </div>
@@ -245,13 +230,13 @@
                                 </div>
                                 <button class="btn waves-effect waves-light modal-trigger" href="#edit" name="action">
                                     Change Password
-                                </button>/
+                                </button>
                                 <button class="btn waves-effect waves-light"
                                         onclick="return status_org_admin('{{ org_admin.username }}', '{{ org_admin.status }}')"
                                         id='{{ org_admin.username }}_status'>
-                                    {% if org_admin.status == 'active' %} Suspend Admin {% else %} Activate Admin {% endif %}
+                                    {% if org_admin.status == 'active' %} Suspend {% else %} Activate {% endif %}
                                 </button>
-                                /
+
                                 <button class="btn waves-effect waves-light" id='{{ org_admin.username }}_delete'
                                         onclick="delete_org_admin('{{ org_admin.username }}')">Delete
                                 </button>
@@ -299,22 +284,35 @@
         var username = document.getElementById('org_admin_username').value;
         var password = document.getElementById('org_admin_password').value;
         var repassword = document.getElementById('org_admin_repassword').value;
-        $.ajax({
-            url: Flask.url_for('org.create_org_admin'),
-            type: "GET",
-            data: {
-                'name': name,
-                'username': username,
-                'password': password,
-                'repassword': repassword,
-                'org_username': "{{ org_info.username }}"
-            },
-            success: function (data) {
-                alert(data.code)
-window.location.reload()            },
-            error: function (xhr) {
-            }
-        })
+        if (name != '' && username != '' && password != '' && repassword != '') {
+            $.ajax({
+                url: Flask.url_for('org.create_org_admin'),
+                type: "GET",
+                data: {
+                    'name': name,
+                    'username': username,
+                    'password': password,
+                    'repassword': repassword,
+                    'org_username': "{{ org_info.username }}"
+                },
+                success: function (data) {
+                    if (data.status == 200) {
+                        alert(data.code);
+                        $('.modal').modal('close');
+                        window.location.reload()
+                    }
+                    else {
+                        alert(data.code);
+                        instance.open();
+                    }
+                },
+                error: function (xhr) {
+                }
+            })
+        }
+        else {
+            alert('Fill the Fields')
+        }
     }
 </script>
 
@@ -322,20 +320,27 @@ window.location.reload()            },
     function edit_org_admin(username) {
         var password = document.getElementById('edit_password').value;
         var repassword = document.getElementById('check_password').value;
-        if (password == repassword) {
-            $.ajax({
-                url: Flask.url_for('org.edit_org_admin'),
-                type: "GET",
-                data: {
-                    'username': username,
-                    'password': password,
-                },
-                success: function (data) {
-                    alert(data.code)
-window.location.reload()                },
-                error: function (xhr) {
-                }
-            })
+        if (password == repassword && password != '') {
+            if (password.length < 8) {
+                alert('Password Less than 8 characters')
+            }
+            else {
+                $.ajax({
+                    url: Flask.url_for('org.edit_org_admin'),
+                    type: "GET",
+                    data: {
+                        'username': username,
+                        'password': password
+                    },
+                    success: function (data) {
+                        alert(data.code);
+                        $('.modal').modal('close');
+                        window.location.reload()
+                    },
+                    error: function (xhr) {
+                    }
+                })
+            }
         }
         else {
             alert('Password Mismatch')

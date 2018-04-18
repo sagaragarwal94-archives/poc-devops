@@ -1,12 +1,11 @@
 from flask import render_template, request, redirect, url_for, jsonify
-from flask_login import login_user, login_required, current_user
+from flask_login import login_required
 from app.org import org
-from app import mongo, bcrypt, login_manager
-from app.user.user_loging_manager import User
+from app import mongo
 
 
-@login_required
 @org.route('/admin/<username>/org', methods=['GET'])
+@login_required
 def show_orgs(username):
     user = mongo.db.users.find_one({'username': username})
     orgs = mongo.db.orgs.find({})
@@ -14,8 +13,8 @@ def show_orgs(username):
     return render_template('org/show_orgs.html', user=user, orgs=orgs, orgs_names=orgs_names)
 
 
-@login_required
 @org.route('/admin/<username>/org/create_org', methods=['GET', 'POST'])
+@login_required
 def create_org(username):
     user = mongo.db.users.find_one({'username': username})
     orgs_names = mongo.db.orgs.find({}, {'name': 1, 'username': 1})
@@ -36,8 +35,8 @@ def create_org(username):
     return render_template('org/create_org.html', user=user, orgs_names=orgs_names)
 
 
-@login_required
 @org.route('/admin/<username>/org/edit_org/<org_username>', methods=['GET', 'POST'])
+@login_required
 def edit_org(username, org_username):
     user = mongo.db.users.find_one({'username': username})
     orgs_names = mongo.db.orgs.find({}, {'name': 1, 'username': 1})
@@ -47,16 +46,16 @@ def edit_org(username, org_username):
                            org_admins=org_admins)
 
 
-@login_required
 @org.route('/admin/<username>/org/delete/<org_username>', methods=['GET'])
+@login_required
 def delete_org(username, org_username):
     mongo.db.orgs.delete_one({'username': org_username})
     mongo.db.users.delete_many({'org_username': org_username})
     return redirect(url_for('org.show_orgs', username=username))
 
 
-@login_required
 @org.route('/admin/<username>/org/status/<org_username>', methods=['GET'])
+@login_required
 def org_status(username, org_username):
     org_info = mongo.db.orgs.find_one({'username': org_username})
     admin_usernames = mongo.db.users.find({'org_username': org_username}, {'username': 1, '_id': 0})
@@ -73,8 +72,8 @@ def org_status(username, org_username):
     return redirect(url_for('org.edit_org', username=username, org_username=org_username))
 
 
-@login_required
 @org.route('/admin/org/create_org_admin', methods=['GET'])
+@login_required
 def create_org_admin():
     data = request.args
     name = data.to_dict()['name']
@@ -85,22 +84,22 @@ def create_org_admin():
     org_info = mongo.db.orgs.find_one({'username': org_username}, {'org_admins': 1, '_id': 0})
     org_admins = org_info['org_admins'].split(',')
     if password == repassword:
-        exist_user = mongo.db.users.find_one({'$and':[{'username': username}, {'org_username': org_username}]})
+        exist_user = mongo.db.users.find_one({'$and': [{'username': username}, {'org_username': org_username}]})
         if exist_user:
-            return jsonify({'code': 'User of username exists, different Username'})
+            return jsonify({'code': 'User of username exists, different Username', 'status': 405})
         else:
             mongo.db.users.insert(
                 {'name': name, 'username': username, 'password': password, 'role': 'orgadmin', 'status': 'active',
                  'org_username': org_username})
             org_admins.append(username)
             mongo.db.orgs.update_one({'username': org_username}, {'$set': {'org_admins': ",".join(org_admins)}})
-            return jsonify({'code': 'User created'})
+            return jsonify({'code': 'User created', 'status': 200})
     else:
-        return jsonify({'code': 'Password never matched'})
+        return jsonify({'code': 'Password never matched', 'status': 405})
 
 
-@login_required
 @org.route('/admin/org/edit_org_admin', methods=['GET'])
+@login_required
 def edit_org_admin():
     data = request.args
     username = data.to_dict()['username']
@@ -109,8 +108,8 @@ def edit_org_admin():
     return jsonify({'code': 'Password Changed for {username}'.format(username=username)})
 
 
-@login_required
 @org.route('/admin/org/status_org_admin', methods=['GET'])
+@login_required
 def status_org_admin():
     data = request.args
     username = data.to_dict()['username']
@@ -119,15 +118,17 @@ def status_org_admin():
     admin_username = data.to_dict()['admin_username']
     if status == 'active':
         mongo.db.users.update_one({'username': username}, {'$set': {'status': 'suspend'}})
-        return jsonify({'url': '/admin/{admin_username}/org/edit_org/{org_username}'.format(admin_username=admin_username, org_username=org_username)})
+        return jsonify({'url': '/admin/{admin_username}/org/edit_org/{org_username}'.format(
+            admin_username=admin_username, org_username=org_username)})
 
     else:
         mongo.db.users.update_one({'username': username}, {'$set': {'status': 'active'}})
-        return jsonify({'url': '/admin/{admin_username}/org/edit_org/{org_username}'.format(admin_username=admin_username, org_username=org_username)})
+        return jsonify({'url': '/admin/{admin_username}/org/edit_org/{org_username}'.format(
+            admin_username=admin_username, org_username=org_username)})
 
 
-@login_required
 @org.route('/admin/org/delete_org_admin', methods=['GET'])
+@login_required
 def delete_org_admin():
     data = request.args
     username = data.to_dict()['username']
@@ -138,4 +139,5 @@ def delete_org_admin():
     org_admins = org_info['org_admins'].split(',')
     org_admins.remove(username)
     mongo.db.orgs.update_one({'username': org_username}, {'$set': {'org_admins': ",".join(org_admins)}})
-    return jsonify({'url': '/admin/{admin_username}/org/edit_org/{org_username}'.format(admin_username=admin_username, org_username=org_username)})
+    return jsonify({'url': '/admin/{admin_username}/org/edit_org/{org_username}'.format(admin_username=admin_username,
+                                                                                        org_username=org_username)})

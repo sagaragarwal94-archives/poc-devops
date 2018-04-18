@@ -4,7 +4,7 @@
     <!--Import Google Icon Font-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!--Import materialize.css-->
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='assets/css/materialize.min.css') }}"
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='assets/css/materialize.min.css') }}">
 
     <!--Let browser know website is optimized for mobile-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -112,7 +112,7 @@
 
                                     <div class="row">
                                         <div class="input-field col s12">
-                                            <input id="newpassword" name="newpassword" type="password" class="validate"
+                                            <input id="newpassword" minlength="8"  name="newpassword" type="password" class="validate"
                                                    required>
                                             <label for="newpassword">New Password</label>
                                         </div>
@@ -120,7 +120,7 @@
 
                                     <div class="row">
                                         <div class="input-field col s12">
-                                            <input id="re_newpassword" type="password" name="re_newpassword"
+                                            <input id="re_newpassword" minlength="8" type="password" name="re_newpassword"
                                                    class="validate" required>
                                             <label for="re_newpassword">Re Enter New Password</label>
                                         </div>
@@ -139,7 +139,6 @@
                         <button class="btn waves-effect waves-light modal-trigger" href="#changepassword" name="action">
                             Change Password
                         </button>
-                        <br><br>
                         <a class="btn waves-effect waves-light "
                            href="{{ url_for('admin.other_admin_status', username=user['username'],other_admin_username=other_admin['username'], status=other_admin['status']) }}">
                             {% if other_admin['status'] == 'active' %}
