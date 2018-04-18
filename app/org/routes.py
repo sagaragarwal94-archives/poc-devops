@@ -4,8 +4,8 @@ from app.org import org
 from app import mongo
 
 
-@login_required
 @org.route('/admin/<username>/org', methods=['GET'])
+@login_required
 def show_orgs(username):
     user = mongo.db.users.find_one({'username': username})
     orgs = mongo.db.orgs.find({})
@@ -13,8 +13,8 @@ def show_orgs(username):
     return render_template('org/show_orgs.html', user=user, orgs=orgs, orgs_names=orgs_names)
 
 
-@login_required
 @org.route('/admin/<username>/org/create_org', methods=['GET', 'POST'])
+@login_required
 def create_org(username):
     user = mongo.db.users.find_one({'username': username})
     orgs_names = mongo.db.orgs.find({}, {'name': 1, 'username': 1})
@@ -35,8 +35,8 @@ def create_org(username):
     return render_template('org/create_org.html', user=user, orgs_names=orgs_names)
 
 
-@login_required
 @org.route('/admin/<username>/org/edit_org/<org_username>', methods=['GET', 'POST'])
+@login_required
 def edit_org(username, org_username):
     user = mongo.db.users.find_one({'username': username})
     orgs_names = mongo.db.orgs.find({}, {'name': 1, 'username': 1})
@@ -46,16 +46,16 @@ def edit_org(username, org_username):
                            org_admins=org_admins)
 
 
-@login_required
 @org.route('/admin/<username>/org/delete/<org_username>', methods=['GET'])
+@login_required
 def delete_org(username, org_username):
     mongo.db.orgs.delete_one({'username': org_username})
     mongo.db.users.delete_many({'org_username': org_username})
     return redirect(url_for('org.show_orgs', username=username))
 
 
-@login_required
 @org.route('/admin/<username>/org/status/<org_username>', methods=['GET'])
+@login_required
 def org_status(username, org_username):
     org_info = mongo.db.orgs.find_one({'username': org_username})
     admin_usernames = mongo.db.users.find({'org_username': org_username}, {'username': 1, '_id': 0})
@@ -72,8 +72,8 @@ def org_status(username, org_username):
     return redirect(url_for('org.edit_org', username=username, org_username=org_username))
 
 
-@login_required
 @org.route('/admin/org/create_org_admin', methods=['GET'])
+@login_required
 def create_org_admin():
     data = request.args
     name = data.to_dict()['name']
@@ -98,8 +98,8 @@ def create_org_admin():
         return jsonify({'code': 'Password never matched', 'status': 405})
 
 
-@login_required
 @org.route('/admin/org/edit_org_admin', methods=['GET'])
+@login_required
 def edit_org_admin():
     data = request.args
     username = data.to_dict()['username']
@@ -108,8 +108,8 @@ def edit_org_admin():
     return jsonify({'code': 'Password Changed for {username}'.format(username=username)})
 
 
-@login_required
 @org.route('/admin/org/status_org_admin', methods=['GET'])
+@login_required
 def status_org_admin():
     data = request.args
     username = data.to_dict()['username']
@@ -127,8 +127,8 @@ def status_org_admin():
             admin_username=admin_username, org_username=org_username)})
 
 
-@login_required
 @org.route('/admin/org/delete_org_admin', methods=['GET'])
+@login_required
 def delete_org_admin():
     data = request.args
     username = data.to_dict()['username']

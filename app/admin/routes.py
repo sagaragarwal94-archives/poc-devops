@@ -4,8 +4,8 @@ from app.admin import admin
 from app import mongo
 
 
-@login_required
 @admin.route('/admin/<username>', methods=['POST', 'GET'])
+@login_required
 def profile(username):
     user = mongo.db.users.find_one({'username': username})
     if request.method == 'POST':
@@ -34,8 +34,8 @@ def show_admins(username):
                            admins_names=admins_names)
 
 
-@login_required
 @admin.route('/admin/<username>/create_admin', methods=['GET', 'POST'])
+@login_required
 def create_admin(username):
     user = mongo.db.users.find_one({'username': username})
     admins_details = mongo.db.users.find({'$and': [{'username': {'$ne': username}}, {'role': 'admin'}]})
@@ -61,8 +61,8 @@ def create_admin(username):
                            admins_names=admins_names)
 
 
-@login_required
 @admin.route('/admin/<username>/other_admin/<other_admin_username>', methods=['GET', 'POST'])
+@login_required
 def edit_other_admin(username, other_admin_username):
     user = mongo.db.users.find_one({'username': username})
     other_admin = mongo.db.users.find_one({'username': other_admin_username})
@@ -80,16 +80,16 @@ def edit_other_admin(username, other_admin_username):
     return render_template('admin/edit_other_admin.html', user=user, other_admin=other_admin, admins_names=admins_names)
 
 
-@login_required
 @admin.route('/admin/<username>/other_admin/<other_admin_username>/delete', methods=['GET'])
+@login_required
 def delete_other_admin(username, other_admin_username):
     user = mongo.db.users.find_one({'username': username})
     mongo.db.users.delete_one({'username': other_admin_username})
     return redirect(url_for('admin.show_admins', username=user['username']))
 
 
-@login_required
 @admin.route('/admin/<username>/other_admin/<other_admin_username>/<status>', methods=['GET'])
+@login_required
 def other_admin_status(username, other_admin_username, status):
     user = mongo.db.users.find_one({'username': username})
     other_admin = mongo.db.users.find_one({'username': other_admin_username})

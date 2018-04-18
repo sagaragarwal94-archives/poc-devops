@@ -44,10 +44,10 @@ def login():
     return render_template('user/login.html', message=message)
 
 
-@login_required
-@user.route('/<org_username>/login', methods=['POST', 'GET'])
+@user.route('/login/<org_username>', methods=['POST', 'GET'])
 def org_login(org_username):
     message = ''
+    org_info = mongo.db.orgs.find_one({'username': org_username})
     if request.method == 'POST':
         username = request.form['inputUsername']
         password = request.form['inputPassword']
@@ -59,7 +59,7 @@ def org_login(org_username):
                 login_user(user_obj)
                 if user['role'] == 'orgadmin':
                     if user['status'] == 'active':
-                        return redirect(url_for('org_admin.dashboard', username=username, org_username=org_username))
+                        return redirect(url_for('org_admin.credentials', org_username=org_username, org_admin_username=username))
                     else:
                         message = 'Account Suspended'
                         return render_template('user/login.html', message=message)
@@ -72,11 +72,11 @@ def org_login(org_username):
         else:
             message = 'No Account of this Username. Sorry !!'
             return render_template('user/login.html', message=message)
-    return render_template('user/login.html', message=message)
+    return render_template('user/login.html', message=message, org_info=org_info)
 
 
-@login_required
 @user.route('/logout')
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('user.login'))
