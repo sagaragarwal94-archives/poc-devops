@@ -124,7 +124,7 @@ def verify_source():
                         auth=(profile_cred['username'], profile_cred['password']))
     if apps.status_code == 200:
         apps_names = []
-        for app in  apps.json()['data']:
+        for app in apps.json()['data']:
             apps_names.append(app['name'])
         print(apps_names)
         return jsonify({'status': 200, 'apps_names': apps_names})

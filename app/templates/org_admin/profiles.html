@@ -399,14 +399,14 @@
                     var build_cred = document.getElementById('build_cred').value;
                     var token_name = document.getElementById('token_name').value;
                     if (build_server_name != '' && build_cred != '' && token_name != '') {
-                        deploy_servers  = {}
+                        deploy_servers  = []
                         if (sessionStorage.length != 0) {
                             for(var i =0; i < sessionStorage.length; i++){
-                                    deploy_servers[sessionStorage.key(i)]=sessionStorage.getItem(sessionStorage.key(i))
+                                deploy_servers.push(sessionStorage.key(i)+':'+ sessionStorage.getItem(sessionStorage.key(i)));
                             }
                             $.ajax({
                                 url: Flask.url_for('org_admin.create_app'),
-                                type: GET,
+                                type: "GET",
                                 data: {
                                     'profile_name': profile_name,
                                     'source_server_name': source_server_name,
@@ -419,7 +419,7 @@
                                     'build_server_name': build_server_name,
                                     'build_cred': build_cred,
                                     'token_name': token_name,
-                                    'deploy_servers': deploy_servers,
+                                    'deploy_servers': deploy_servers.join(),
                                     'org_username': '{{ org_info.username }}',
                                     'org_admin': '{{ admin.username }}'
                                 },
@@ -447,7 +447,8 @@
                 }
             }
             else {
-                alert('Enter Source System credentials')
+                alert('Enter Source System credentials');
+                document.getElementById('source_cred').value = "";
             }
         }
         else {alert('Enter Profile Name')}
