@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='assets/css/materialize.min.css') }}"
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+
+<body>
+<div class="row">
+
+    <div class="col s12 m4 l3">
+
+
+        <ul id="nav-mobile" class="side-nav fixed">
+            <li class="logo" style="text-align: center">
+                <img src="{{ org_info.image }}" alt=""
+                     width="100" height="100">
+
+            </li>
+            <li class="bold active" style="text-align: center">Welcome, {{ admin.username }}</li>
+
+            <li>
+                <hr>
+            </li>
+            <li class="bold" style="text-align: center"><a
+                    href="{{ url_for('org_admin.credentials', org_username=org_info.username, org_admin_username = admin.username) }}">Credentials</a>
+            </li>
+            <li class="bold active" style="text-align: center"><a
+                    href="{{ url_for('org_admin.profile', org_username=org_info.username, org_admin_username = admin.username) }}">DOPBM
+                Profiles</a></li>
+
+
+        </ul>
+    </div>
+
+    <div class="col s12 m8 l9">
+        <ul>
+            <li>
+                <nav class="nav-extended">
+                    <div class="nav-wrapper">
+
+                    </div>
+                    <div class="nav-content">
+                        <span class="nav-title">Edit Profile</span>
+
+                    </div>
+                </nav>
+            </li>
+            <li>
+                <hr>
+            </li>
+
+            <li>
+                <p> Enter Profile Name </p>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input id="profile_name" value="{{ profile.profile_name }}" disabled name="profile_name" type="text" class="validate" required>
+                        <label for="profile_name">Profile Name</label>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="input-field col s6"><h5>Source System</h5></div>
+                    <div class="input-field col s6">
+                        {#                        <button class="btn waves-effect waves-light" style="float:right" id="verify_source"#}
+                        {#                                onclick="">Verify#}
+                        {#                        </button>#}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input id="source_server_name" value="{{ profile.source_server_name }}" name="source_server_name" type="text" class="validate" required>
+                        <label for="source_server_name">enter server name</label>
+                    </div>
+                    <div>
+                        <label>Select Credentials</label>
+                        <select id="source_cred" class="browser-default" style="width: 50%;" onchange="fetch_source(document.getElementById('source_server_name').value,
+                        document.getElementById('source_cred').value)">
+                            <option value="" disabled selected>Choose your option</option>
+                            {% for cred in credentials_info %}
+                                <option value="{{ cred.profile_name }}">{{ cred.profile_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <select id="app_select" class="browser-default" disabled="disabled">
+                        <option value="" disabled style="width: 50%" selected>Choose your App</option>
+                    </select>
+                </div>
+
+                <hr>
+
+                <div class="row">
+                    <div class="input-field col s6"><h5>SCM Configuration</h5></div>
+                    <div class="input-field col s6">
+                        <button class="btn waves-effect waves-light" style="float:right" id="verify_scm"
+                                onclick="verify_scm()">Verify
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    <label>Select SCM System</label>
+                    <select id="scm_system" class="browser-default" style="width: 33%">
+                        <option value="" disabled selected>Choose your option</option>
+                        <option value="github">Github</option>
+                        <option value="gitlab">Gitlab</option>
+                        <option value="svn">SVN</option>
+                    </select>
+                </div>
+                <div class="row">
+
+                    <div class="input-field col s4">
+                        <input id="scm_repo_name" name="scm_repo_name" type="text" class="validate" required>
+                        <label for="scm_repo_name">enter scm repository name</label>
+                    </div>
+                    <div class="input-field col s4">
+                        <input id="branch_name" name="branch_name" type="text" class="validate" required>
+                        <label for="branch_name">Branch Name/Folder Name</label>
+                    </div>
+
+
+                    <label>Select Credentials</label>
+                    <select id="scm_cred" class="browser-default" style="width:33%">
+                        <option value="" disabled selected>Choose your option</option>
+                        {% for cred in credentials_info %}
+                            <option value="{{ cred.profile_name }}">{{ cred.profile_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+
+                <hr>
+
+                <div class="row">
+                    <div class="input-field col s6"><h5>Build Configuration</h5></div>
+                    <div class="input-field col s6">
+                        <button class="btn waves-effect waves-light" style="float:right" id="verify_build"
+                                onclick="verify_build()">Verify
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s4">
+                        <input id="build_server_name" name="build_server_name" type="text" class="validate" required>
+                        <label for="build_server_name">enter server name</label>
+                    </div>
+                    <div class="input-field col s4">
+                        <input id="token_name" name="token_name" type="text" class="validate" required>
+                        <label for="token_name">enter token name</label>
+                    </div>
+
+
+                    <label>Select Credentials</label>
+                    <select id="build_cred" class="browser-default" style="width: 33%;">
+                        <option value="" disabled selected>Choose your option</option>
+                        {% for cred in credentials_info %}
+                            <option value="{{ cred.profile_name }}">{{ cred.profile_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <hr>
+
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input id="deploy_server_name" name="deploy_server_name" type="text" class="validate" required>
+                        <label for="deploy_server_name">enter server name</label>
+                    </div>
+                    <label>Select Credentials</label>
+                    <select id="deploy_cred" class="browser-default" style="width: 50%;">
+                        <option value="" disabled selected>Choose your option</option>
+                        {% for cred in credentials_info %}
+                            <option value="{{ cred.profile_name }}">{{ cred.profile_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-field col s12">
+                    <table id="deploy_instances" class="striped">
+                        <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>Deploy Server</th>
+                            <th>Deploy Credentials</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </li>
+
+
+        </ul>
+    </div>
+
+</div>
+<!--Import jQuery before materialize.js-->
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='assets/js/materialize.min.js') }}"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.modal').modal();
+    });
+</script>
+</body>
+</html>

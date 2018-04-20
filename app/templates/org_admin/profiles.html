@@ -33,8 +33,23 @@
                     href="{{ url_for('org_admin.credentials', org_username=org_info.username, org_admin_username = admin.username) }}">Credentials</a>
             </li>
             <li class="bold active" style="text-align: center"><a
+                    class="collapsible-header waves-effect waves-teal active"
                     href="{{ url_for('org_admin.profile', org_username=org_info.username, org_admin_username = admin.username) }}">DOPBM
-                Profiles</a></li>
+                Profiles</a>
+                <div class="collapsible-body">
+                    <ul class="collapsible collapsible-accordion">
+                        {% for profile_name in profile_names %}
+                            <li style="margin-left: 10%">
+                                <a href="{{ url_for('org_admin.edit_profile', org_username=org_info.username, org_admin_username=admin.username
+                                        , profile_name=profile_name.profile_name) }}">
+                                    {{ profile_name['profile_name'] }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+            </li>
 
 
         </ul>

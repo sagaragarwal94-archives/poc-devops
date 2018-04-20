@@ -38,13 +38,28 @@ def profile(org_username, org_admin_username):
     credentials_info = mongo.db.creds.find({'org_username': org_username})
     creds_list = []
     profiles = mongo.db.profiles.find({'org_username': org_username})
+    profile_names = mongo.db.profiles.find({'org_username': org_username},{'profile_name': 1, '_id': 0})
     for cred in credentials_info:
         creds_list.append(cred)
     # apps = requests.get('http://172.16.0.39:8080/activiti-app/api/enterprise/models?filter=myApps&modelType=3',
     #                     auth=('admin', 'password'))
     apps = {}
     return render_template('org_admin/profiles.html', org_info=org_info, admin=admin, credentials_info=creds_list,
-                           apps=apps, profiles= profiles)
+                           apps=apps, profiles=profiles, profile_names=profile_names)
+
+
+@org_admin.route('/<org_username>/edit_profile/<org_admin_username>/<profile_name>', methods=['GET', 'POST'])
+@login_required
+def edit_profile(org_username, org_admin_username, profile_name):
+    org_info = mongo.db.orgs.find_one({'username': org_username})
+    admin = mongo.db.users.find_one({'username': org_admin_username})
+    credentials_info = mongo.db.creds.find({'org_username': org_username})
+    creds_list = []
+    profile = mongo.db.profiles.find_one({'$and':[{'profile_name': profile_name},{'org_username': org_username}]})
+    for cred in credentials_info:
+        creds_list.append(cred)
+    return render_template('org_admin/edit_profiles.html', org_info=org_info, admin=admin, credentials_info=creds_list,
+                           profile=profile)
 
 
 @org_admin.route('/verify_build', methods=['GET'])
