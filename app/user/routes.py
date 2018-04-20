@@ -76,7 +76,11 @@ def org_login(org_username):
 
 
 @user.route('/logout')
+@user.route('/logout/<org_username>')
 @login_required
-def logout():
+def logout(org_username=''):
     logout_user()
-    return redirect(url_for('user.login'))
+    if org_username:
+        return redirect(url_for('user.org_login', org_username=org_username))
+    else:
+        return redirect(url_for('user.login'))
