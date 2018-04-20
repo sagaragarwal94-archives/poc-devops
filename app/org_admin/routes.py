@@ -130,3 +130,17 @@ def verify_source():
         return jsonify({'status': 200, 'apps_names': apps_names})
     else:
         return jsonify({'status': apps.status_code})
+
+
+@org_admin.route('/create_app', methods=['GET'])
+@login_required
+def create_app():
+    data = request.args
+    data = data.to_dict()
+    profile_exists = mongo.db.profiles.find_one(
+        {'$and': [{'profile_name': data['profile_name']}, {'org_username': data['org_username']}]})
+    if profile_exists:
+        return jsonify({'status': 401})
+    else:
+        mongo.db.profiles.insert(data)
+        return jsonify({'status': 200})
