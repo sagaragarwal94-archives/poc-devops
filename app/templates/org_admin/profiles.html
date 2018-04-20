@@ -421,7 +421,8 @@
                                     'token_name': token_name,
                                     'deploy_servers': deploy_servers.join(),
                                     'org_username': '{{ org_info.username }}',
-                                    'org_admin': '{{ admin.username }}'
+                                    'org_admin': '{{ admin.username }}',
+                                    'creds_used': scm_cred+','+source_cred+','+build_cred+','+Object.values(sessionStorage).join()
                                 },
                                 success: function(data) {
                                     if(data.status == 200) {

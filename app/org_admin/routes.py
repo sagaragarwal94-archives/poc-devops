@@ -108,7 +108,8 @@ def delete_cred():
     if active_admins:
         return jsonify({'status': 401})
     else:
-        mongo.db.creds.delete_one({'$and': [{'profile_name': data['profile_name']}, {'org_username': data['org_username']}]})
+        mongo.db.creds.delete_one(
+            {'$and': [{'profile_name': data['profile_name']}, {'org_username': data['org_username']}]})
         return jsonify({'status': 200})
 
 
@@ -121,7 +122,7 @@ def verify_source():
         {'$and': [{'profile_name': data['cred']}, {'org_username': data['org_username']}]})
     apps = requests.get('http://{server_name}/activiti-app/api/enterprise/models?filter=myApps&modelType=3'.format(
         server_name=data['server_name']),
-                        auth=(profile_cred['username'], profile_cred['password']))
+        auth=(profile_cred['username'], profile_cred['password']))
     if apps.status_code == 200:
         apps_names = []
         for app in apps.json()['data']:
@@ -142,5 +143,21 @@ def create_app():
     if profile_exists:
         return jsonify({'status': 401})
     else:
+        creds_used = list(set(data['creds_used'].split(',')))
+        for cred in creds_used:
+            info = mongo.db.creds.find_one(
+                {'$and': [{'profile_name': cred}, {'org_username': data['org_username']}]},
+                {'admins': 1, '_id': 0})
+            admins_list = info['admins']
+            if admins_list:
+                admins = admins_list.split(',')
+                admins.append(data['org_admin'])
+                admins = set(admins)
+                admins_list = ','.join(admins)
+            else:
+                admins_list = data['org_admin']
+            mongo.db.creds.update_one({'$and': [{'profile_name': cred}, {'org_username': data['org_username']}]},
+                                      {'$set': {'admins': admins_list}}, upsert=False)
+
         mongo.db.profiles.insert(data)
         return jsonify({'status': 200})
