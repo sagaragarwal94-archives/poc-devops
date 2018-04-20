@@ -37,13 +37,14 @@ def profile(org_username, org_admin_username):
     admin = mongo.db.users.find_one({'username': org_admin_username})
     credentials_info = mongo.db.creds.find({'org_username': org_username})
     creds_list = []
+    profiles = mongo.db.profiles.find({'org_username': org_username})
     for cred in credentials_info:
         creds_list.append(cred)
     # apps = requests.get('http://172.16.0.39:8080/activiti-app/api/enterprise/models?filter=myApps&modelType=3',
     #                     auth=('admin', 'password'))
     apps = {}
     return render_template('org_admin/profiles.html', org_info=org_info, admin=admin, credentials_info=creds_list,
-                           apps=apps)
+                           apps=apps, profiles= profiles)
 
 
 @org_admin.route('/verify_build', methods=['GET'])

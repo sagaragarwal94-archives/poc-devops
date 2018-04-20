@@ -64,18 +64,29 @@
                 <table class="striped">
                     <thead>
                     <tr>
-
+                        <td>Profile Name</td>
+                        <td>Source System</td>
+                        <td>SCM Repo Name</td>
+                        <td>Build Server</td>
+                        <td>Deploy Server</td>
+                        <td>Created By</td>
+                        <td>Options</td>
                     </tr>
                     </thead>
 
                     <tbody>
-                    <tr>
-                        <td>
+                    {% for profile in profiles %}
 
-
-                        </td>
-                    </tr>
-
+                        <tr>
+                            <td>{{ profile.profile_name }}</td>
+                            <td>{{ profile.app_select }}</td>
+                            <td>{{ profile.scm_repo_name }}</td>
+                            <td>{{ profile.build_server_name }}</td>
+                            <td><{{ profile.deploy_server_name }}/td>
+                            <td>{{ profile.org_admin }}</td>
+                            <td></td>
+                        </tr>
+                    {% endfor %}
                     </tbody>
                 </table>
             </li>
@@ -140,7 +151,7 @@
                         <option value="svn">SVN</option>
                     </select>
                 </div>
-                                <div class="row">
+                <div class="row">
 
                     <div class="input-field col s4">
                         <input id="scm_repo_name" name="scm_repo_name" type="text" class="validate" required>
@@ -274,7 +285,9 @@
                 }
             })
         }
-        else {alert('Feature for other SCM to be rolled out')}
+        else {
+            alert('Feature for other SCM to be rolled out')
+        }
     }
 
     function verify_build() {
@@ -355,15 +368,15 @@
             i = i + 1;
             var deploy_server_name = $("#deploy_server_name").val();
             var deploy_cred = $("#deploy_cred").val();
-            if(Object.keys(sessionStorage).indexOf(deploy_server_name) > -1) {
+            if (Object.keys(sessionStorage).indexOf(deploy_server_name) > -1) {
                 alert("Server name already exists, try another name or delete existing ones");
             }
             else {
-                var markup = "<tr id='row_" + i + "'><td><button id='" + i + "' onclick='delete_row(this.id)'>Delete</button></td><td>" + deploy_server_name + "</td><td>" + deploy_cred + "</td></tr>";
+                var markup = "<tr id='row_" + i + "'><td><button id='" + i + "' onclick='delete_row(this.id," + deploy_server_name + ")'>Delete</button></td><td>" + deploy_server_name + "</td><td>" + deploy_cred + "</td></tr>";
                 $("#deploy_instances tbody").append(markup);
                 sessionStorage.setItem(deploy_server_name, deploy_cred)
             }
-            });
+        });
 
         // Find and remove selected table rows
         $(".delete-row").click(function () {
@@ -377,32 +390,33 @@
 </script>
 
 <script type="text/javascript">
-    function delete_row(id) {
-        $("#row_" + id).remove()
+    function delete_row(id, server_name) {
+        $("#row_" + id).remove();
+        sessionStorage.removeItem(server_name);
     }
 </script>
 
 <script type="text/javascript">
-    function create_app(){
+    function create_app() {
         var profile_name = document.getElementById('profile_name').value;
-        if(profile_name != '') {
+        if (profile_name != '') {
             var source_server_name = document.getElementById('source_server_name').value;
             var source_cred = document.getElementById('source_cred').value;
             var app_select = document.getElementById('app_select').value;
-            if(source_server_name != '' && source_cred != '' && app_select != '') {
+            if (source_server_name != '' && source_cred != '' && app_select != '') {
                 var scm_system = document.getElementById('scm_system').value;
                 var scm_repo_name = document.getElementById('scm_repo_name').value;
                 var branch_name = document.getElementById('branch_name').value;
                 var scm_cred = document.getElementById('scm_cred').value;
-                if(scm_system != '' && scm_repo_name != '' && branch_name != '' && scm_cred != '') {
+                if (scm_system != '' && scm_repo_name != '' && branch_name != '' && scm_cred != '') {
                     var build_server_name = document.getElementById('build_server_name').value;
                     var build_cred = document.getElementById('build_cred').value;
                     var token_name = document.getElementById('token_name').value;
                     if (build_server_name != '' && build_cred != '' && token_name != '') {
-                        deploy_servers  = []
+                        deploy_servers = []
                         if (sessionStorage.length != 0) {
-                            for(var i =0; i < sessionStorage.length; i++){
-                                deploy_servers.push(sessionStorage.key(i)+':'+ sessionStorage.getItem(sessionStorage.key(i)));
+                            for (var i = 0; i < sessionStorage.length; i++) {
+                                deploy_servers.push(sessionStorage.key(i) + ':' + sessionStorage.getItem(sessionStorage.key(i)));
                             }
                             $.ajax({
                                 url: Flask.url_for('org_admin.create_app'),
@@ -422,10 +436,10 @@
                                     'deploy_servers': deploy_servers.join(),
                                     'org_username': '{{ org_info.username }}',
                                     'org_admin': '{{ admin.username }}',
-                                    'creds_used': scm_cred+','+source_cred+','+build_cred+','+Object.values(sessionStorage).join()
+                                    'creds_used': scm_cred + ',' + source_cred + ',' + build_cred + ',' + Object.values(sessionStorage).join()
                                 },
-                                success: function(data) {
-                                    if(data.status == 200) {
+                                success: function (data) {
+                                    if (data.status == 200) {
                                         $('.modal').modal('close');
                                         window.location.reload()
                                     }
@@ -439,7 +453,7 @@
                             alert('Create Deployment Creds');
                         }
                     }
-                    else{
+                    else {
                         alert('Enter Build credentials')
                     }
                 }
@@ -452,7 +466,9 @@
                 document.getElementById('source_cred').value = "";
             }
         }
-        else {alert('Enter Profile Name')}
+        else {
+            alert('Enter Profile Name')
+        }
     }
 </script>
 </body>
