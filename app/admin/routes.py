@@ -23,8 +23,8 @@ def profile(username):
     return render_template('admin/profile.html', user=user)
 
 
-@login_required
 @admin.route('/admin/<username>/show_admins', methods=['GET'])
+@login_required
 def show_admins(username):
     user = mongo.db.users.find_one({'username': username})
     admins_details = mongo.db.users.find({'$and': [{'username': {'$ne': username}}, {'role': 'admin'}]})
